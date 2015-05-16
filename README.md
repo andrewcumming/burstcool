@@ -51,7 +51,7 @@ To make a movie (uses ffmpeg):
 
 ### Published lightcurves from this code
 
-	* [Cumming & Macbeth (2004)](http://lanl.arxiv.org/astro-ph/0401317) The Thermal Evolution following a Superburst on an Accreting Neutron Star
-	* [Cumming et al. (2006)](http://lanl.arxiv.org/astro-ph/0508432) Long Type I X-ray Bursts and Neutron Star Interior Physics
-	* [in 't Zand et al. (2014)](http://lanl.arxiv.org/abs/1312.5234) The Cooling Rate of Neutron Stars after Thermonuclear Shell Flashes
+* [Cumming & Macbeth (2004)](http://lanl.arxiv.org/astro-ph/0401317) The Thermal Evolution following a Superburst on an Accreting Neutron Star
+* [Cumming et al. (2006)](http://lanl.arxiv.org/astro-ph/0508432) Long Type I X-ray Bursts and Neutron Star Interior Physics
+* [in 't Zand et al. (2014)](http://lanl.arxiv.org/abs/1312.5234) The Cooling Rate of Neutron Stars after Thermonuclear Shell Flashes
 
