@@ -18,6 +18,10 @@ int main(int argc, char *argv[])
 	burst.convection_flag=atoi(argv[5]);
 	burst.time_to_run=atof(argv[6]);
 	burst.temperature_slope=atof(argv[7]);
+	if (argc > 8) {
+		burst.mass = atof(argv[8]);
+		burst.radius = atof(argv[9]);
+	}
 
 	// turn output on or off
 	burst.output = 1;	
@@ -49,7 +53,6 @@ void calculate_chisq(Burst *burst)
 		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i]))/eobs[i],2.0);
 	}
 	
-	printf("chisq = %lg  (%lg)\n",chisq,chisq/nobs);	
 }
 
 

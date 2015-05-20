@@ -6,3 +6,7 @@ movie.mp4
 data/*
 *.ps
 burstcool
+mcmc/*
+mcplot*
+mcee*
+lc.pro

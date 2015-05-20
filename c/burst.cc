@@ -14,7 +14,7 @@ void *pt2Burst;
 Burst::Burst() {
 	// initialize default parameters
 	this->mass = 1.4;
-	this->radius = 11.2;
+	this->radius = 12.0;
   	this->temperature_slope=-1;
 	this->E18=0.2;
 	this->yb=1e12;
@@ -65,7 +65,9 @@ void Burst::setup(void) {
 
 	// initial temperature profile
 	pt2Burst = (void *)this;
-	double Tb=zbrent(Wrapper_set_initial_temperature_profile,1e9,8e9,1e-3);
+	double beta = 0.5;
+	double T2=pow(3.0*beta*this->yb*this->g/7.5657e-15,0.25);	
+	double Tb=zbrent(Wrapper_set_initial_temperature_profile,1e9,T2,1e-3);
 	printf("initial Tb=%lg (%lg)\n",Tb);
 
 	// open output files
@@ -106,9 +108,12 @@ double Burst::set_initial_temperature_profile(double Tb)
 	for (int i=this->N+1; i>=1; i--) {
 		if (this->y[i] <= this->yb+1.0) {
 	//			this->ODE.set_bc(i,Tf*pow(this->y[i]/this->yb,this->temperature_slope)); 
-			this->ODE.set_bc(i,Tf);
-			energy += heat(Ti,Tf,this->y[i])*this->y[i]*this->dx;
-			//printf("%lg %lg %lg\n",this->y[i],Tf,heat(Ti,Tf,this->y[i]));						
+			double T2 = Tf;
+			double Prad=2.521967e-15*pow(Tf,4);
+  			if (Prad > this->y[i]*this->g) T2*=pow(this->y[i]*this->g/Prad,0.25)*0.99;
+			this->ODE.set_bc(i,T2);
+			energy += heat(Ti,T2,this->y[i])*this->y[i]*this->dx;
+			//printf("%lg %lg %lg %lg\n",this->y[i],Tf,T2,heat(Ti,T2,this->y[i]));						
 			Tf *= (1.0 - this->dx*this->temperature_slope); 
 		} else { 
 			this->ODE.set_bc(i,Ti);

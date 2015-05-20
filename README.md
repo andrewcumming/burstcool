@@ -4,7 +4,6 @@ To compile, first install
 
 * GNU Scientific Library [GSL](http://www.gnu.org/software/gsl/) 
 * [condegin13.f](http://www.ioffe.ru/astro/conduct/index.html) fortran routine by A. Potekhin to calculate thermal conductivity (put in directory `c`, you may need to remove deprecated 'pause' and 'stop' statements)
-* for MCMC, [emcee](http://dan.iel.fm/emcee/current) and [triangle_plot](http://pypi.python.org/pypi/triangle_plot)
 
 then
 
@@ -16,7 +15,7 @@ should compile the code after setting the appropriate compiler in the makefile.
 
 To run the code
 
-	cool E18 yb yt burn t slope
+	cool E18 yb yt burn t slope <mass> <radius>
 	
 The parameters are
 
@@ -25,6 +24,7 @@ The parameters are
 * yt:	column depth at the top of the grid 
 * burn:	a flag to indicate the initial temperature profile - 0=instantaneous burn (local deposition of energy), 1=adiabatic slope if the parameter <slope> is not given, or sets del=<slope> if <slope> is given
 * t:	seconds to run for (neutron star surface time)
+* mass and radius: optional parameters to specify the mass and radius (you should give either both or none, default is 1.4 solar masses, 12 km)
 
 e.g.
 
@@ -38,12 +38,12 @@ The code produces three output files in the directory `out`:
 * `out/out`  -  full details of the layer structure as a function of time
 * a line is added to `out/summary` with information such as the total energy radiated from the surface or in neutrinos etc.
 
-To make a movie (uses ffmpeg):
+`plot.pro` has IDL routines to make plots. To make a movie (uses ffmpeg):
 
 	make cleanpng
 	
 	idl
-	.com lc
+	.com plot
 	prof2, /png
 	
 	make movie
