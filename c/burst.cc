@@ -22,7 +22,6 @@ Burst::Burst() {
 	this->ycomplete=1e14;
 	this->convection_flag=1;
 	this->time_to_run=1e5;
-	this->temperature_slope=0.225;
 
 	// Can use this to turn off neutrino emission
 	this->nuflag=1;
@@ -65,10 +64,27 @@ void Burst::setup(void) {
 
 	// initial temperature profile
 	pt2Burst = (void *)this;
-	double beta = 0.5;
-	double T2=pow(3.0*beta*this->yb*this->g/7.5657e-15,0.25);	
-	double Tb=zbrent(Wrapper_set_initial_temperature_profile,1e9,T2,1e-3);
-	printf("initial Tb=%lg (%lg)\n",Tb);
+
+	if (this->convection_flag) {   // adiabatic or power law temperature profile
+		double beta = 0.5;
+		double T2=pow(3.0*beta*this->yb*this->g/7.5657e-15,0.25);	
+		double Tb=zbrent(Wrapper_set_initial_temperature_profile,1e9,T2,1e-3);
+		printf("initial Tb=%lg (%lg)\n",Tb);
+	} else {    // instantaneous burn
+		for (int i=this->N+1; i>=1; i--) {
+			double Tf, Ti=2e8;
+			if (this->y[i] <= this->yb+1.0) {	
+				this->heat_y = this->y[i];
+				this->heat_Ti = 2e8;
+				double beta = 0.5;
+				double T2=pow(3.0*beta*this->y[i]*this->g/7.5657e-15,0.25);	
+				Tf = zbrent(Wrapper_heat,2e8,T2,1e-3);
+			} else {
+				Tf = Ti;
+			}
+			this->ODE.set_bc(i,Tf);
+		}
+	}
 
 	// open output files
 	if (this->output) {
@@ -101,6 +117,15 @@ double Burst::Wrapper_set_initial_temperature_profile(double Tb)
 	return myself->set_initial_temperature_profile(Tb);
 }
 
+
+double Burst::Wrapper_heat(double Tf)
+{
+	Burst *myself = (Burst *) pt2Burst;
+	return myself->heat(Tf) - myself->E18*1e18;
+}
+
+
+
 double Burst::set_initial_temperature_profile(double Tb)
 {
 	// initial temperature profile
@@ -112,9 +137,20 @@ double Burst::set_initial_temperature_profile(double Tb)
 			double Prad=2.521967e-15*pow(Tf,4);
   			if (Prad > this->y[i]*this->g) T2*=pow(this->y[i]*this->g/Prad,0.25)*0.99;
 			this->ODE.set_bc(i,T2);
-			energy += heat(Ti,T2,this->y[i])*this->y[i]*this->dx;
+			this->heat_y = this->y[i];
+			this->heat_Ti = Ti;
+			energy += heat(T2)*this->y[i]*this->dx;
+			if (this->temperature_slope < 0.0) {  // isentropic temperature profile
+				this->EOS.T8 = 1e-8*T2;
+				this->EOS.rho = this->EOS.find_rho();
+				double del_ad = this->EOS.del_ad();
+				Tf *= (1.0 - this->dx*del_ad); 
+	//			printf("%lg %lg %lg %lg\n",this->y[i],Tf,T2,del_ad);						
+				
+			} else {    // power law temperature profile
 			//printf("%lg %lg %lg %lg\n",this->y[i],Tf,T2,heat(Ti,T2,this->y[i]));						
-			Tf *= (1.0 - this->dx*this->temperature_slope); 
+				Tf *= (1.0 - this->dx*this->temperature_slope); 
+			}
 		} else { 
 			this->ODE.set_bc(i,Ti);
 		}
@@ -251,10 +287,11 @@ void Burst::output_result_for_step(int j, double FEdd,
 
 
 
-double Burst::heat(double Ti,double Tf,double y)
+double Burst::heat(double Tf)
 {
 	double energy = 0.0;
-	this->EOS.P = this->g*y;
+	double Ti = this->heat_Ti;
+	this->EOS.P = this->g*this->heat_y;
 	double dT = (Tf-Ti)*0.01;
 	for (int i=1; i<=100; i++) {
 		double T = Ti + dT*i;

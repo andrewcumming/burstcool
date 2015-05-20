@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	burst.ycomplete=atof(argv[4]);
 	burst.convection_flag=atoi(argv[5]);
 	burst.time_to_run=atof(argv[6]);
-	burst.temperature_slope=atof(argv[7]);
+	if (argc > 7) burst.temperature_slope=atof(argv[7]);
 	if (argc > 8) {
 		burst.mass = atof(argv[8]);
 		burst.radius = atof(argv[9]);
@@ -42,17 +42,19 @@ int main(int argc, char *argv[])
 void calculate_chisq(Burst *burst)
 {
 	// can add hard-coded data here
-	// 4U 1636 lightcurve
-	int nobs = 1;
-	double tobs[nobs] = { 100.0, 200.0 };
-	double Lobs[nobs] = { 1e38, 1e37 };
-	double eobs[nobs] = { 1e36, 1e35 };
-		
+	// (time, luminosity and error in erg/s)
+	//int nobs = 2;
+	//double tobs[nobs] = { 100.0, 200.0 };
+	//double Lobs[nobs] = { 1e38, 1e37 };
+	//double eobs[nobs] = { 1e36, 1e35 };	
+	//#include "../data/1636.cc"
+
 	double chisq=0.0;
 	for (int i=0; i<nobs; i++) {
 		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i]))/eobs[i],2.0);
 	}
 	
+	printf("chisq = %lf  (%lf)\n",chisq,chisq/nobs);	
 }
 
 

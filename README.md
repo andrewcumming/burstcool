@@ -15,7 +15,7 @@ should compile the code after setting the appropriate compiler in the makefile.
 
 To run the code
 
-	cool E18 yb yt burn t slope <mass> <radius>
+	cool E18 yb yt burn t <slope> <mass> <radius>
 	
 The parameters are
 

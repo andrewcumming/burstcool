@@ -40,7 +40,8 @@ private:
 					double *cooling_time, double *time_above_Edd,double *last_time_output);
 	void get_TbTeff_relation(double yHe, int comp);
 
-	double heat(double Ti,double Tf,double y);
+	double heat(double Tf);
+	static double Wrapper_heat(double Tf);
 	double set_initial_temperature_profile(double Tf);
 	static double Wrapper_set_initial_temperature_profile(double Tf);
 	
@@ -52,6 +53,7 @@ private:
   	double *y, *CP, *K, *F, *NU;
 	double **rho_grid, **CP_grid, **K_grid, **NU_grid;
 	double betamin, betamax, deltabeta;
+	double heat_Ti,heat_y;
 	int nbeta;
   	double g, ZZ;
 	int outer_boundary_flag;
