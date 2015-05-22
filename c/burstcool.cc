@@ -2,7 +2,7 @@
 #include <math.h>
 #include "../h/burst.h"
 
-void calculate_chisq(Burst *burst);
+void calculate_chisq(Burst *burst,double distance);
 
 
 int main(int argc, char *argv[])
@@ -22,9 +22,11 @@ int main(int argc, char *argv[])
 		burst.mass = atof(argv[8]);
 		burst.radius = atof(argv[9]);
 	}
+	double distance=6.0;
+	if (argc > 10) distance = atof(argv[10]);
 
 	// turn output on or off
-	burst.output = 1;	
+	burst.output = 0;	
 	
 	// Setup the grid
 	burst.setup();
@@ -33,13 +35,13 @@ int main(int argc, char *argv[])
 	burst.calculate_cooling_curve();
 
 	// chi-squared
-	//calculate_chisq(&burst);
+	calculate_chisq(&burst,distance);
 }
 
 
 
 
-void calculate_chisq(Burst *burst)
+void calculate_chisq(Burst *burst, double distance)
 {
 	// can add hard-coded data here
 	// (time, luminosity and error in erg/s)
@@ -47,11 +49,11 @@ void calculate_chisq(Burst *burst)
 	//double tobs[nobs] = { 100.0, 200.0 };
 	//double Lobs[nobs] = { 1e38, 1e37 };
 	//double eobs[nobs] = { 1e36, 1e35 };	
-	//#include "../data/1636.cc"
+	#include "../data/1636.cc"
 
 	double chisq=0.0;
 	for (int i=0; i<nobs; i++) {
-		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i]))/eobs[i],2.0);
+		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i])/pow(distance/6.0,2.0))/eobs[i],2.0);
 	}
 	
 	printf("chisq = %lf  (%lf)\n",chisq,chisq/nobs);	

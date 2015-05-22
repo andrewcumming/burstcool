@@ -263,7 +263,7 @@ void Burst::output_result_for_step(int j, double FEdd,
 	int n1=100;
 	
 	
-	if ((fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 0.1)) {
+	if (j==1 || (fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 0.1)) {
 	
 	
  //  if (j % n1 == 0 || j==ODE.kount) {   // output every n1-th cycle
