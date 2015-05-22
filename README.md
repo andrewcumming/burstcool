@@ -15,7 +15,7 @@ should compile the code after setting the appropriate compiler in the makefile.
 
 To run the code
 
-	cool E18 yb yt burn t <slope> <mass> <radius>
+	burstcool E18 yb yt burn t <slope> <mass> <radius>
 	
 The parameters are
 
@@ -28,9 +28,9 @@ The parameters are
 
 e.g.
 
-	cool  0.33 4.3e11 1e8  0  1e5       instantaneous burn
-	cool  0.33 4.3e11 1e8  1  1e5  0.225    T\propto P^alpha with alpha=0.225
-	cool  0.33 4.3e11 1e8  1  1e5      adiabatic profile
+	burstcool  0.33 4.3e11 1e8  0  1e5       instantaneous burn
+	burstcool  0.33 4.3e11 1e8  1  1e5  0.225    T\propto P^alpha with alpha=0.225
+	burstcool  0.33 4.3e11 1e8  1  1e5      adiabatic profile
 	
 The code produces three output files in the directory `out`:
 
