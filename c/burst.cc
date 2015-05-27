@@ -19,7 +19,6 @@ Burst::Burst() {
 	this->E18=0.2;
 	this->yb=1e12;
 	this->yt=1e8;
-	this->ycomplete=1e14;
 	this->convection_flag=1;
 	this->time_to_run=1e5;
 
@@ -38,7 +37,6 @@ void Burst::setup(void) {
 
 	if (this->yb < 1000.0) this->yb=pow(10.0,this->yb);
 	if (this->yt < 1000.0) this->yt=pow(10.0,this->yt);
-	if (this->ycomplete < 1000.0) this->ycomplete=pow(10.0,this->ycomplete);
 
 	set_ns_parameters(this->mass,this->radius,&this->g,&this->ZZ);
 

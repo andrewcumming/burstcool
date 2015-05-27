@@ -14,19 +14,18 @@ int main(int argc, char *argv[])
 	burst.E18=atof(argv[1]);
 	burst.yb=atof(argv[2]);
 	burst.yt=atof(argv[3]);
-	burst.ycomplete=atof(argv[4]);
-	burst.convection_flag=atoi(argv[5]);
-	burst.time_to_run=atof(argv[6]);
-	if (argc > 7) burst.temperature_slope=atof(argv[7]);
-	if (argc > 8) {
-		burst.mass = atof(argv[8]);
-		burst.radius = atof(argv[9]);
+	burst.convection_flag=atoi(argv[4]);
+	burst.time_to_run=atof(argv[5]);
+	if (argc > 6) burst.temperature_slope=atof(argv[6]);
+	if (argc > 7) {
+		burst.mass = atof(argv[7]);
+		burst.radius = atof(argv[8]);
 	}
 	double distance=6.0;
-	if (argc > 10) distance = atof(argv[10]);
+	if (argc > 9) distance = atof(argv[9]);
 
 	// turn output on or off
-	burst.output = 0;	
+	burst.output = 1;	
 	
 	// Setup the grid
 	burst.setup();
