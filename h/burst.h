@@ -25,6 +25,8 @@ public:
 	void derivs(double t, double T[], double dTdt[]);
 	void jacobn(double, double *, double *, double **, int);
 
+	int icool;
+	double L34;
 	
 private:
 	FILE *fp,*fp2,*fp3;

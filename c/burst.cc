@@ -22,6 +22,10 @@ Burst::Burst() {
 	this->convection_flag=1;
 	this->time_to_run=1e5;
 
+	// to model URCA cooling:
+	this->icool = 32;  // index of the grid cell for the cooling source
+	this->L34 = 0.0;   // luminosity of the cooling source
+
 	// Can use this to turn off neutrino emission
 	this->nuflag=1;
 	// If outer_boundary_flag is set, use the outer grid from makegrid, otherwise
@@ -254,9 +258,10 @@ void Burst::output_result_for_step(int j, double FEdd,
 	
 	// Note that in the following, time is now redshifted to infinity and the second column
 	// is now Linfinity rather than the local flux at the star
-   fprintf(this->fp2, "%lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n", 
+   fprintf(this->fp2, "%lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n", 
 		this->ZZ*ODE.get_x(j), 4.0*M_PI*pow(1e5*this->radius,2.0)*this->F[1]/(this->ZZ*this->ZZ), this->F[2], 
-      	ODE.get_y(this->N-5,j), 0.0, this->F[10], *er, *en, lumn, *eredd, FEdd, FEdd_ph, ODE.get_y(1,j));
+      	ODE.get_y(this->N-5,j), 0.0, this->F[10], *er, *en, lumn, *eredd, FEdd, FEdd_ph, ODE.get_y(1,j),
+      	this->y[this->icool]);
       
 	int n1=100;
 	
@@ -320,7 +325,7 @@ void Burst::precalculate_vars(void)
 	for (int i=1; i<=this->N+1; i++) {
 		
 		this->EOS.P=this->g*this->y[i];
-			
+		if (i==icool) printf("Column for cooling = %lg\n",this->y[i]);	
 		for (int j=1; j<=this->nbeta; j++) {		
 			double beta = pow(10.0,this->betamin + (j-1)*(this->betamax-this->betamin)/(1.0*(this->nbeta-1)));
 			this->EOS.T8 = 1e-8*pow(3.0*beta*this->EOS.P/7.5657e-15,0.25);
@@ -330,7 +335,9 @@ void Burst::precalculate_vars(void)
 			double kappa=this->EOS.opac();
 			//kappa = 1.0/((1.0/this->EOS.kappa_rad)+(1.0/this->EOS.potek_cond()));
 		   this->K_grid[i][j]=3.03e20*pow(this->EOS.T8,3)/(kappa*this->y[i]);
-			this->NU_grid[i][j]=this->EOS.eps_nu();		
+			this->NU_grid[i][j]=this->EOS.eps_nu();	
+			// add a cooling source in grid cell icool with luminosity L34*1e34 erg/s
+			if (i==this->icool) this->NU_grid[i][j]+=1e34*this->L34*pow(this->EOS.T8/10.0,5.0)/(this->y[i]*this->dx*4.0*3.1415*pow(this->radius*1e6,2.0));
 		}
 	}
 }
