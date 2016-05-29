@@ -257,6 +257,12 @@ void Burst::output_result_for_step(int j, double FEdd,
 	if (this->F[1]<FEdd/exp(1.0) && *time_above_Edd>0.0 && *cooling_time==0.0)
 		*cooling_time = ODE.get_x(j) - *time_above_Edd;
 	
+
+	int n1=100;
+	
+	
+	if (j==1 || (fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 0.1)) {
+
 	// Note that in the following, time is now redshifted to infinity and the second column
 	// is now Linfinity rather than the local flux at the star
    fprintf(this->fp2, "%lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n", 
@@ -264,10 +270,6 @@ void Burst::output_result_for_step(int j, double FEdd,
       	ODE.get_y(this->N-5,j), 0.0, this->F[10], *er, *en, lumn, *eredd, FEdd, FEdd_ph, ODE.get_y(1,j),
       	this->y[this->icool]);
       
-	int n1=100;
-	
-	
-	if (j==1 || (fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 0.1)) {
 	
 	
  //  if (j % n1 == 0 || j==ODE.kount) {   // output every n1-th cycle
