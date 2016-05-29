@@ -21,14 +21,16 @@ int main(int argc, char *argv[])
 	burst.time_to_run=atof(argv[5]);
 	if (argc > 6) burst.temperature_slope=atof(argv[6]);
 	if (argc > 7) {
-	//	burst.mass = atof(argv[7]);
-	//	burst.radius = atof(argv[8]);
-		burst.L34 = atof(argv[7]);
-		burst.icool = atoi(argv[8]);
+		burst.mass = atof(argv[7]);
+		burst.radius = atof(argv[8]);
 	}
 	double distance=6.0;
 	if (argc > 9) distance = atof(argv[9]);
 	if (argc > 10) burst.output = atoi(argv[10]);
+	if (argc > 11) {
+		burst.L34 = atof(argv[11]);
+		burst.icool = atoi(argv[12]);
+	}
 	
 	// Setup the grid
 	burst.setup();

@@ -11,7 +11,7 @@ then
 	mkdir out
 	make cool
 	
-should compile the code after setting the appropriate compiler in the makefile.
+should compile the code (you may need to change the compiler specified in the makefile to  whatever compiler you are using).
 
 To run the code
 
