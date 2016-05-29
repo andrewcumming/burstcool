@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "../h/burst.h"
 
 void calculate_chisq(Burst *burst,double distance);
-
+void parse_parameters(char *fname,Burst &burst,double &);
 
 int main(int argc, char *argv[])
 {
@@ -14,23 +15,23 @@ int main(int argc, char *argv[])
 	burst.output = 1;	
 
 	// Parse command line parameters
-	burst.E18=atof(argv[1]);
-	burst.yb=atof(argv[2]);
-	burst.yt=atof(argv[3]);
-	burst.convection_flag=atoi(argv[4]);
-	burst.time_to_run=atof(argv[5]);
-	if (argc > 6) burst.temperature_slope=atof(argv[6]);
-	if (argc > 7) {
-		burst.mass = atof(argv[7]);
-		burst.radius = atof(argv[8]);
+	// first determine the filename for the 'init.dat' parameter file
+	char fname[200];
+	char fnamedefault[10]="init.dat";
+	switch(argc) {
+		case 3:
+			strcat(fname,"/tmp/init.dat.");
+			strcat(fname,argv[1]);
+			break;
+		case 2:
+			strcat(fname,"init/init.dat.");
+			strcat(fname,argv[1]);
+			break;
+		default:
+			strcat(fname,fnamedefault);
 	}
 	double distance=6.0;
-	if (argc > 9) distance = atof(argv[9]);
-	if (argc > 10) burst.output = atoi(argv[10]);
-	if (argc > 11) {
-		burst.L34 = atof(argv[11]);
-		burst.icool = atoi(argv[12]);
-	}
+	parse_parameters(fname,burst,distance);
 	
 	// Setup the grid
 	burst.setup();
@@ -67,6 +68,36 @@ void calculate_chisq(Burst *burst, double distance)
 
 
 
+void parse_parameters(char *fname,Burst &burst,double &distance) {
+ 	// Set parameters
+	printf("============================================\n");
+	printf("Reading input data from %s\n",fname);
+	FILE *fp = fopen(fname,"r");
+	char s1[100];
+	char s[100];
+	double x;				
+	int commented=0;
+	while (!feof(fp)) {   // we read the file line by line
+		(void) fgets(s1,200,fp);		
+		// ignoring lines that begin with \n (blank) or with # (comments)
+		// or with $ (temperature profile)
+		if (!strncmp(s1,"##",2)) commented = 1-commented;
+		if (strncmp(s1,"#",1) && strncmp(s1,"\n",1) && strncmp(s1,">",1) && commented==0) {
+			sscanf(s1,"%s\t%lg\n",s,&x);
+			if (!strncmp(s,"E18",3)) burst.E18=x;
+			if (!strncmp(s,"yb",2)) burst.yb=x;
+			if (!strncmp(s,"yt",2)) burst.yt=x;
+			if (!strncmp(s,"burn",4)) burst.convection_flag=(int) x;
+			if (!strncmp(s,"time_to_run",11)) burst.time_to_run=x;
+			if (!strncmp(s,"slope",5)) burst.temperature_slope=x;
+			if (!strncmp(s,"mass",4)) burst.mass=x;
+			if (!strncmp(s,"radius",6)) burst.radius=x;
+			if (!strncmp(s,"distance",8)) distance=x;
+			if (!strncmp(s,"output",6)) burst.output=(int) x;
+			if (!strncmp(s,"icool",5)) burst.icool=(int) x;
+			if (!strncmp(s,"L34",3)) burst.L34=x;
+		}
+	}
 
-
-
+	fclose(fp);	
+}

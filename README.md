@@ -11,26 +11,16 @@ then
 	mkdir out
 	make cool
 	
-should compile the code (you may need to change the compiler specified in the makefile to  whatever compiler you are using).
+should compile the code `burstcool` (you may need to change the compiler specified in the makefile to  whatever compiler you are using).
 
-To run the code
-
-	burstcool E18 yb yt burn t <slope> <mass> <radius>
-	
-The parameters are
+Parameters are given in the file `init.dat`:
 
 * E18:	energy per gram in 10^18 erg/g   (roughly 1 MeV/nuc = 10^18 erg/g)
 * yb:	base column depth (can be the actual number, or base 10 log, e.g. 1e12 or 12.0 will work)
 * yt:	column depth at the top of the grid 
-* burn:	a flag to indicate the initial temperature profile - 0=instantaneous burn (local deposition of energy), 1=adiabatic slope if the parameter <slope> is not given, or sets del=<slope> if <slope> is given
-* t:	seconds to run for (neutron star surface time)
+* burn:	a flag to indicate the initial temperature profile - 0=instantaneous burn (local deposition of energy), 1=adiabatic slope if the parameter <slope> is <0, or sets del=<slope> if <slope> is >0
+* time_to_run:	seconds to run for (neutron star surface time)
 * mass and radius: optional parameters to specify the mass and radius (you should give either both or none, default is 1.4 solar masses, 12 km)
-
-e.g.
-
-	burstcool  0.33 4.3e11 1e8  0  1e5       instantaneous burn
-	burstcool  0.33 4.3e11 1e8  1  1e5  0.225    T\propto P^alpha with alpha=0.225
-	burstcool  0.33 4.3e11 1e8  1  1e5      adiabatic profile
 	
 The code produces three output files in the directory `out`:
 
