@@ -87,6 +87,7 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 			if (!strncmp(s,"E18",3)) burst.E18=x;
 			if (!strncmp(s,"yb",2)) burst.yb=x;
 			if (!strncmp(s,"yt",2)) burst.yt=x;
+			if (!strncmp(s,"ydeep_factor",12)) burst.ydeep_factor=x;
 			if (!strncmp(s,"burn",4)) burst.convection_flag=(int) x;
 			if (!strncmp(s,"time_to_run",11)) burst.time_to_run=x;
 			if (!strncmp(s,"slope",5)) burst.temperature_slope=x;

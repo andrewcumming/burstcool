@@ -15,7 +15,7 @@ public:
 	
 	int output;
   	double E18;  // energy input in units of 1e18 erg/g
-	double yb, yt;
+	double yb, yt, ydeep_factor;
   	int convection_flag;
   	int nuflag;   // flag to switch on neutrino cooling
 	double mass,radius;

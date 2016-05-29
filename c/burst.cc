@@ -18,6 +18,7 @@ Burst::Burst() {
   	this->temperature_slope=-1;
 	this->E18=0.2;
 	this->yb=1e12;
+	this->ydeep_factor=100.0;
 	this->yt=1e8;
 	this->convection_flag=1;
 	this->time_to_run=1e5;
@@ -349,7 +350,7 @@ void Burst::precalculate_vars(void)
 void Burst::set_up_grid(int ngrid,  int composition_flag)
 {
 	this->N=ngrid;   // number of grid points per decade in log column depth
-	double ydeep=100.0*this->yb;// this is the target column depth of the innermost zone
+	double ydeep=this->ydeep_factor*this->yb;// this is the target column depth of the innermost zone
 
   	// composition of the cooling layer
   	this->EOS.init(1);

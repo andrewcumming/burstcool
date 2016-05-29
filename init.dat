@@ -1,12 +1,13 @@
 E18	0.2
-yb	1e12
+yb	1e11
 yt	1e8
 burn	0
 slope	0
-time_to_run	1e5
+time_to_run	1e6
 mass	1.4
 radius	12.0
 distance	6.0
 output	1
 icool	0
 L34	0.0
+ydeep_factor	1
