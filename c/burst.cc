@@ -23,6 +23,9 @@ Burst::Burst() {
 	this->convection_flag=1;
 	this->time_to_run=1e5;
 
+	this->deep_composition_flag=1;
+	this->shallow_composition_flag=1;
+	
 	// to model URCA cooling:
 	this->icool = 32;  // index of the grid cell for the cooling source
 	this->L34 = 0.0;   // luminosity of the cooling source
@@ -48,7 +51,7 @@ void Burst::setup(void) {
   	// initialize the numerical grid
  	// the last parameter is composition
  	// 1=Ni56  2=Ca40  3=28Si  4=12C
-  	set_up_grid(50,1);
+  	set_up_grid(50);
 
 	// read in Tb-this->TEFF relation
 	// first param = He column;  second 0=Fe, 1=Si
@@ -69,9 +72,9 @@ void Burst::setup(void) {
 	pt2Burst = (void *)this;
 
 	if (this->convection_flag) {   // adiabatic or power law temperature profile
-		double beta = 0.5;
+		double beta = 0.99;
 		double T2=pow(3.0*beta*this->yb*this->g/7.5657e-15,0.25);	
-		double Tb=zbrent(Wrapper_set_initial_temperature_profile,1e9,T2,1e-3);
+		double Tb=zbrent(Wrapper_set_initial_temperature_profile,5e8,T2,1e-3);
 		printf("initial Tb=%lg (%lg)\n",Tb);
 	} else {    // instantaneous burn
 		for (int i=this->N+1; i>=1; i--) {
@@ -144,6 +147,7 @@ double Burst::set_initial_temperature_profile(double Tb)
 			this->heat_Ti = Ti;
 			energy += heat(T2)*this->y[i]*this->dx;
 			if (this->temperature_slope < 0.0) {  // isentropic temperature profile
+				set_composition(this->shallow_composition_flag);
 				this->EOS.T8 = 1e-8*T2;
 				this->EOS.rho = this->EOS.find_rho();
 				double del_ad = this->EOS.del_ad();
@@ -261,7 +265,7 @@ void Burst::output_result_for_step(int j, double FEdd,
 	int n1=100;
 	
 	
-	if (j==1 || (fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 0.1)) {
+	if (j==1 || (fabs(log10(fabs(this->ODE.get_x(j))*this->ZZ)-log10(fabs(*last_time_output))) >= 1e-2)) {
 
 	// Note that in the following, time is now redshifted to infinity and the second column
 	// is now Linfinity rather than the local flux at the star
@@ -301,6 +305,7 @@ double Burst::heat(double Tf)
 	double dT = (Tf-Ti)*0.01;
 	for (int i=1; i<=100; i++) {
 		double T = Ti + dT*i;
+		set_composition(this->shallow_composition_flag);
 		this->EOS.T8 = T*1e-8;
 		this->EOS.rho = this->EOS.find_rho();
 		energy += dT * this->EOS.CP();	
@@ -331,6 +336,8 @@ void Burst::precalculate_vars(void)
 		if (i==icool) printf("Column for cooling = %lg\n",this->y[i]);	
 		for (int j=1; j<=this->nbeta; j++) {		
 			double beta = pow(10.0,this->betamin + (j-1)*(this->betamax-this->betamin)/(1.0*(this->nbeta-1)));
+			if (this->y[i] > this->yb) set_composition(this->deep_composition_flag);
+			else set_composition(this->shallow_composition_flag);
 			this->EOS.T8 = 1e-8*pow(3.0*beta*this->EOS.P/7.5657e-15,0.25);
 			this->EOS.rho = this->EOS.find_rho();
 			this->rho_grid[i][j] = this->EOS.rho;
@@ -346,10 +353,29 @@ void Burst::precalculate_vars(void)
 }
 
 
+void Burst::set_composition(int composition_flag) {
+	if (composition_flag==4) {
+ 		//printf("The cooling layer composition is 12C.\n");
+ 		this->EOS.A[1]=12.0; this->EOS.Z[1]=6.0;  // 28Si
+	}	else
+	if (composition_flag==3) {
+		//printf("The cooling layer composition is 28Si.\n");
+ 		this->EOS.A[1]=28.0; this->EOS.Z[1]=14.0;  // 28Si
+	} else
+	if (composition_flag==2) {
+		//printf("The cooling layer composition is Ca40.\n");
+ 		this->EOS.A[1]=40.0; this->EOS.Z[1]=20.0;  // 40Ca
+	} else {
+		//printf("The cooling layer composition is 56Ni.\n");
+ 		this->EOS.A[1]=56.0; this->EOS.Z[1]=28.0;  // 56Ni	
+	}
+  	this->EOS.set_Yi=this->EOS.Yi();  // hardwire the Yi's!  (increases speed)
+  	this->EOS.set_Ye=this->EOS.Ye();
+  	this->EOS.Z2=this->EOS.YZ2();
+}
 
 
-
-void Burst::set_up_grid(int ngrid,  int composition_flag)
+void Burst::set_up_grid(int ngrid)
 {
 	this->N=ngrid;   // number of grid points per decade in log column depth
 	double ydeep=this->ydeep_factor*this->yb;// this is the target column depth of the innermost zone
@@ -358,24 +384,6 @@ void Burst::set_up_grid(int ngrid,  int composition_flag)
   	this->EOS.init(1);
 	this->EOS.Q=900.0;
   	this->EOS.X[1]=1.0;   // pure something
-	if (composition_flag==4) {
- 		printf("The cooling layer composition is 12C.\n");
- 		this->EOS.A[1]=12.0; this->EOS.Z[1]=6.0;  // 28Si
-	}	else
-	if (composition_flag==3) {
-		printf("The cooling layer composition is 28Si.\n");
- 		this->EOS.A[1]=28.0; this->EOS.Z[1]=14.0;  // 28Si
-	} else
-	if (composition_flag==2) {
-		printf("The cooling layer composition is Ca40.\n");
- 		this->EOS.A[1]=40.0; this->EOS.Z[1]=20.0;  // 40Ca
-	} else {
-		printf("The cooling layer composition is 56Ni.\n");
- 		this->EOS.A[1]=56.0; this->EOS.Z[1]=28.0;  // 56Ni	
-	}	
-  	this->EOS.set_Yi=this->EOS.Yi();  // hardwire the Yi's!  (increases speed)
-  	this->EOS.set_Ye=this->EOS.Ye();
-  	this->EOS.Z2=this->EOS.YZ2();
 
   	// storage
   	this->CP=vector(this->N+2);

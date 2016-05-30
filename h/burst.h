@@ -8,7 +8,8 @@ public:
 	~Burst();
 
 	void setup(void);
-	void set_up_grid(int ngrid, int composition_flag);
+	void set_up_grid(int ngrid);
+	void set_composition(int composition_flag);
 	void calculate_cooling_curve(void);
 	
 	Spline lightcurve;
@@ -26,6 +27,7 @@ public:
 	void jacobn(double, double *, double *, double **, int);
 
 	int icool;
+	int shallow_composition_flag,deep_composition_flag;
 	double L34;
 	
 private:

@@ -97,6 +97,9 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 			if (!strncmp(s,"output",6)) burst.output=(int) x;
 			if (!strncmp(s,"icool",5)) burst.icool=(int) x;
 			if (!strncmp(s,"L34",3)) burst.L34=x;
+			if (!strncmp(s,"deep_composition",16)) burst.deep_composition_flag=(int) x;
+			if (!strncmp(s,"shallow_composition",19)) burst.shallow_composition_flag=(int) x;
+			if (!strncmp(s,"L34",3)) burst.L34=x;
 		}
 	}
 
