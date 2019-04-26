@@ -7,7 +7,7 @@ ODIR = o
 # compiler
 CC = g++
 FORT = gfortran
-CFLAGS = -lm -lgsl -lgslcblas
+CFLAGS = -lm -lgsl -lgslcblas -L/usr/local/lib -I/usr/local/include
 
 # main code
 OBJS = $(ODIR)/burst.o $(ODIR)/root.o $(ODIR)/odeint.o $(ODIR)/eos.o $(ODIR)/spline.o $(ODIR)/vector.o $(ODIR)/timer.o $(ODIR)/ns.o $(ODIR)/condegin13.o
@@ -61,6 +61,9 @@ grid_sorty: out/grid
 
 movie:
 	ffmpeg -qscale 1 -r 20 -b 9600 -i png/%3d.png movie.mp4
+	
+movie2:
+        ffmpeg -r 30 -i png/%3d.png  -vcodec libx264 -y -an movie.mp4
 
 cleanpng:
 	rm -f png/*.png
