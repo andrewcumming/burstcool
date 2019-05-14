@@ -1,0 +1,51 @@
+Description of the contents of each file
+
+-- prof -- 
+col1 : time at infinity (s) 
+col2 : luminosity at infinity (erg s-1)  (4piR**2*F[1]/Z**2). first grid point
+col3 : flux (erg s-1 cm-2) (F[2]) 
+col4 : ODE.get_y(this->N-5,j) temperature at N-5 (towards the bottom)
+col5 : 0
+col6 : F[10]
+col7 : Energy radiated (er)  per unit A
+col8 : Energy radiated from neutrinos (en = lumn*t, lumn has flux units) per unit A
+col9 : Neutrino luminosity (?) (lumn)
+col10: Energy radiated with L<=LEdd (eredd) 
+col11: FEdd (Cst) eddington flux for pure He at the surface
+col12: real eddington flux, not assuming helium
+col13: ODE.get_y(1,j), temperature in zone 1
+col14: this->y[this->icool]) column depth of cooling source 
+
+
+
+-- out --
+line 1 : Number of grid points
+Then, repeating:
+time (s)
+col1: Column depth (g cm-2)
+col2: Temperature (K)
+col3: Local flux, not redshifted
+col4: Neutrino ergs/g/s
+col5: Flux gradient dF/dy
+col6: density
+col7: heat capacity/unit vol (cp*rho)
+col8: local dTdt
+col9: for local pressure, temperature at which radiation pressure would be dominating
+col10: opacity
+col11: dlogTdlogP
+col12: del adiabatic
+col13: beta - Prad/P (gy is pressure)
+
+
+
+-- summary --
+Appends a line on each run
+col1,2,4 : input parameters yb,E18,yt
+col3: number of grid points N
+col5: convection_flag
+col6: 4piR**2*er
+col7: 4piR**2*en
+col8: 4piR**2*eredd
+col9: time above Edd
+col10: cooling time
+

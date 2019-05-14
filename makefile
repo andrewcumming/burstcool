@@ -5,7 +5,7 @@ CDIR = c
 ODIR = o
 
 # compiler
-CC = g++
+CC = g++-9
 FORT = gfortran
 CFLAGS = -lm -lgsl -lgslcblas -L/usr/local/lib -I/usr/local/include
 
@@ -61,9 +61,9 @@ grid_sorty: out/grid
 
 movie:
 	ffmpeg -qscale 1 -r 20 -b 9600 -i png/%3d.png movie.mp4
-	
+
 movie2:
-        ffmpeg -r 30 -i png/%3d.png  -vcodec libx264 -y -an movie.mp4
+	ffmpeg -r 30 -i png/%3d.png  -vcodec libx264 -y -an movie.mp4
 
 cleanpng:
 	rm -f png/*.png
