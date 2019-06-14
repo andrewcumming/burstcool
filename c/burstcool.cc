@@ -3,7 +3,7 @@
 #include <math.h>
 #include "../h/burst.h"
 
-void calculate_chisq(Burst *burst,double distance);
+//void calculate_chisq(Burst *burst,double distance);
 void parse_parameters(char *fname,Burst &burst,double &);
 
 int main(int argc, char *argv[])
@@ -40,30 +40,30 @@ int main(int argc, char *argv[])
 	burst.calculate_cooling_curve();
 
 	// chi-squared
-	calculate_chisq(&burst,distance);
+	//calculate_chisq(&burst,distance);
 }
 
 
 
 
-void calculate_chisq(Burst *burst, double distance)
-{
-	// can add hard-coded data here
-	// (time, luminosity and error in erg/s)
-	//int nobs = 2;
-	//double tobs[nobs] = { 100.0, 200.0 };
-	//double Lobs[nobs] = { 1e38, 1e37 };
-	//double eobs[nobs] = { 1e36, 1e35 };	
-	#include "../data/1636_peak.cc"
-//	#include "../data/1636.cc"
+// void calculate_chisq(Burst *burst, double distance)
+// {
+// 	// can add hard-coded data here
+// 	// (time, luminosity and error in erg/s)
+// 	//int nobs = 2;
+// 	//double tobs[nobs] = { 100.0, 200.0 };
+// 	//double Lobs[nobs] = { 1e38, 1e37 };
+// 	//double eobs[nobs] = { 1e36, 1e35 };	
+// 	//#include "../data/1636_peak.cc"
+// //	#include "../data/1636.cc"
 
-	double chisq=0.0;
-	for (int i=0; i<nobs; i++) {
-		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i])/pow(distance/6.0,2.0))/eobs[i],2.0);
-	}
+// 	double chisq=0.0;
+// 	for (int i=0; i<nobs; i++) {
+// 		chisq += pow((Lobs[i] - burst->lightcurve.get(tobs[i])/pow(distance/6.0,2.0))/eobs[i],2.0);
+// 	}
 	
-	printf("chisq = %lf  (%lf)\n",chisq,chisq/nobs);	
-}
+// 	printf("chisq = %lf  (%lf)\n",chisq,chisq/nobs);	
+// }
 
 
 

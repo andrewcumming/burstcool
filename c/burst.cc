@@ -75,7 +75,7 @@ void Burst::setup(void) {
 		double beta = 0.99;
 		double T2=pow(3.0*beta*this->yb*this->g/7.5657e-15,0.25);	
 		double Tb=zbrent(Wrapper_set_initial_temperature_profile,5e8,T2,1e-3);
-		printf("initial Tb=%lg (%lg)\n",Tb);
+		printf("initial Tb=%lg \n",Tb);
 	} else {    // instantaneous burn
 		for (int i=this->N+1; i>=1; i--) {
 			double Tf, Ti=2e8;
@@ -410,7 +410,7 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 // made by makegrid.cc
 {
 	double *temp, *flux;
-	int npoints = 361;  // number of points to read in
+	int npoints = 381;  // number of points to read in
 	temp = vector(npoints);
 	flux = vector(npoints);
 
@@ -434,10 +434,11 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 			count++; 
 			temp[count] = pow(10.0,T);
 			flux[count] = pow(10.0,F);
+			// printf("count %d\n",count);
+			printf("%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
 			if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
 		}
 	}
-	
 	printf("Read %d points from %s\n",count,fname);
 		
 	fclose(fp);

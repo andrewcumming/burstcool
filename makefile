@@ -5,8 +5,8 @@ CDIR = c
 ODIR = o
 
 # compiler
-CC = g++-9
-FORT = gfortran
+CC = /usr/bin/g++
+FORT = /usr/bin/gfortran
 CFLAGS = -lm -lgsl -lgslcblas -L/usr/local/lib -I/usr/local/include
 
 # main code
