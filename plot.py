@@ -99,11 +99,8 @@ def lc2(D=1):  # Plots the lightcurve with hour axis and observed fluence axis (
     axright.loglog(t,L/(4*pi*D**2*kpc**2),alpha=0)
     axright.set_ylabel(r'Observed fluence (erg cm$^{-2}$ s$^{-1}$)',fontsize=14) 
 
-    if png: 
-        plt.close()
-        fig.savefig('lightcurve2.png')
-    else : plt.show()
+    fig.savefig('lightcurve2.png')
 
 if sys.argv[1] == 'lc2' :
-    if len(sys.argv)<4: sys.exit('Give distance to source in kpc')  
-    lc2(D=float(sys.argv[3]))
+    if len(sys.argv)<3: sys.exit('Give distance to source in kpc (python plot.py lc2 distance/kpc)')  
+    lc2(D=float(sys.argv[2]))

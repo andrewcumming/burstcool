@@ -410,9 +410,10 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 // made by makegrid.cc
 {
 	double *temp, *flux;
-	int npoints = 381;  // number of points to read in
-	temp = vector(npoints);
-	flux = vector(npoints);
+	double y,T,F;
+	// int npoints = 381;  // number of points to read in
+	// temp = vector(npoints);
+	// flux = vector(npoints);
 
 	char fname[50]="envelope_models/grid_sorty_";
 	if (comp == 0) {
@@ -424,8 +425,20 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 	FILE *fp = fopen(fname,"r");
 	FILE *fp2;
 	if (this->output) fp2=fopen("out/TbTeff", "w");
-	
-	double y,T,F;
+
+	// First run to find the number of points
+	int npoints=0;
+	while (!feof(fp)) {
+		fscanf(fp, "%lg %lg %lg\n", &y, &T, &F);
+		if (y == log10(this->yt)) ++npoints; // increment 1
+	}
+	fclose(fp);
+	temp = vector(npoints);
+	flux = vector(npoints);
+
+
+	// Now reading the data
+	fp = fopen(fname,"r");
 	int count = 0;
 	while (!feof(fp)) {
 		
@@ -434,8 +447,7 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 			count++; 
 			temp[count] = pow(10.0,T);
 			flux[count] = pow(10.0,F);
-			// printf("count %d\n",count);
-			printf("%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
+			// printf("%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
 			if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
 		}
 	}
