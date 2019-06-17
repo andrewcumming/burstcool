@@ -21,14 +21,16 @@ Parameters are given in the file `init.dat`:
 * burn:	a flag to indicate the initial temperature profile - 0=instantaneous burn (local deposition of energy), 1=adiabatic slope if the parameter <slope> is <0, or sets del=<slope> if <slope> is >0
 * time_to_run:	seconds to run for (neutron star surface time)
 * mass and radius: optional parameters to specify the mass and radius (you should give either both or none, default is 1.4 solar masses, 12 km)
-* distance: units of kpc/10 km??
+* distance: 
 * output: Boolean for output to files (default 1)
 * icool: Index of the grid cell for the cooling source (default 32)
 * L34: Luminosity of the cooling source (default 0)
 * ydeep_factor: default 100, y heating/base (heating at 1e12,base at 1e14 if ydeepfactor=100) (target column depth,
 but based on grid construction its not exactly right)
-* deep_composition : boolean
-* shallow_composition : boolean
+* deep_composition : 
+* shallow_composition : 
+* envelope_file : If a specific envelope file (envelope_models/file) should be read to obtain the base F-T relation.  Default is to decide based on composition ("none")
+* env_g : Value of g used in envelope calculations. burstcool will scale the F-T relation to match gravity. Default is 2.45e14
 
 	
 The code produces three output files in the directory `out`:

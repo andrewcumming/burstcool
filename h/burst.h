@@ -29,6 +29,12 @@ public:
 	int icool;
 	int shallow_composition_flag,deep_composition_flag;
 	double L34;
+
+	char envelope_file;
+	double env_g;
+	
+	
+
 	
 private:
 	FILE *fp,*fp2,*fp3;

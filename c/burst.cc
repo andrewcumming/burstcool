@@ -38,6 +38,11 @@ Burst::Burst() {
 
 	// Output to files?
 	this->output = 1;
+
+	// Envelope files
+	this->envelope_file = 'none';
+	this->env_g = 2.45e14;
+
 }
 
 
@@ -194,7 +199,7 @@ void Burst::calculate_cooling_curve(void)
 	double *time = new double [ODE.kount];
 	double *lum = new double [ODE.kount];
 	for (int j=1; j<=ODE.kount; j++) {
-		double flux=(this->g/2.45e14)*this->TEFF.get(ODE.get_y(1,j));
+		double flux=(this->g/env_g)*this->TEFF.get(ODE.get_y(1,j));
 		time[j-1] = this->ZZ*ODE.get_x(j);
 		lum[j-1] = 4.0*M_PI*pow(1e5*this->radius,2.0)*flux/(this->ZZ*this->ZZ);
 	}
@@ -244,7 +249,7 @@ void Burst::output_result_for_step(int j, double FEdd,
 	outer_boundary(ODE.get_y(1,j),this->K[1],this->CP[1],this->NU[1],&T0,&this->K[0],&this->CP[0],&this->NU[0]);
    	for (int i=2; i<=this->N+1; i++) this->F[i]=0.5*(this->K[i]+this->K[i-1])*(ODE.get_y(i,j)-ODE.get_y(i-1,j))/this->dx;
 //this->F[1]=this->F[2];
-	if (this->outer_boundary_flag) this->F[1]=(this->g/2.45e14)*this->TEFF.get(ODE.get_y(1,j));
+	if (this->outer_boundary_flag) this->F[1]=(this->g/env_g)*this->TEFF.get(ODE.get_y(1,j));
 	else this->F[1]=0.5*(this->K[1]+this->K[0])*(ODE.get_y(1,j)-T0)/this->dx;
    double lumn=0.0;
 	for (int i=1; i<this->N; i++) lumn+=0.5*(this->y[i+1]-this->y[i])*(this->NU[i+1]+this->NU[i]);
@@ -415,6 +420,20 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 	// temp = vector(npoints);
 	// flux = vector(npoints);
 
+
+	//  HOW TO MAKE THIS WORK?
+	// if (this->envelope_file == 'none') {
+	// 	char fname[50]="envelope_models/grid_sorty_";
+	// 	if (comp == 0) {
+	// 		sprintf(fname,"%sFe_%d",fname,(int) yHe);		
+	// 	} else {
+	// 		sprintf(fname,"%sSi_%d",fname,(int) yHe);
+	// 	}
+	// }	
+	// else {
+	// 	char fname = this->envelope_file;
+	// }
+
 	char fname[50]="envelope_models/grid_sorty_";
 	if (comp == 0) {
 		sprintf(fname,"%sFe_%d",fname,(int) yHe);		
@@ -422,6 +441,8 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 		sprintf(fname,"%sSi_%d",fname,(int) yHe);
 	}
 	printf("Reading TbTeff relation from file: %s\n",fname);
+
+
 	FILE *fp = fopen(fname,"r");
 	FILE *fp2;
 	if (this->output) fp2=fopen("out/TbTeff", "w");
@@ -485,7 +506,7 @@ void Burst::derivs(double t, double T[], double dTdt[])
 double Burst::calculate_heat_flux(int i, double *T)
 {
 	if (i==1 && this->outer_boundary_flag)
-		return (this->g/2.45e14)*this->TEFF.get(T[i]);  //outer boundary flux
+		return (this->g/env_g)*this->TEFF.get(T[i]);  //outer boundary flux
 	else
 		return 0.5*(this->K[i]+this->K[i-1])*(T[i]-T[i-1])/this->dx;	
 }

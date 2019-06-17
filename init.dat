@@ -13,3 +13,5 @@ L34	0.0
 ydeep_factor	1000
 deep_composition	1
 shallow_composition	1
+envelope_file	none
+env_g	2.45e14

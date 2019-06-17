@@ -100,6 +100,8 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 			if (!strncmp(s,"deep_composition",16)) burst.deep_composition_flag=(int) x;
 			if (!strncmp(s,"shallow_composition",19)) burst.shallow_composition_flag=(int) x;
 			if (!strncmp(s,"L34",3)) burst.L34=x;
+			if (!strncmp(s,"envelope_file",13)) burst.envelope_file=x;
+			if (!strncmp(s,"env_g",5)) burst.env_g=x;
 		}
 	}
 
