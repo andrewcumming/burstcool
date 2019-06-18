@@ -75,6 +75,7 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 	FILE *fp = fopen(fname,"r");
 	char s1[100];
 	char s[100];
+	char s2[100];
 	double x;				
 	int commented=0;
 	while (!feof(fp)) {   // we read the file line by line
@@ -83,7 +84,9 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 		// or with $ (temperature profile)
 		if (!strncmp(s1,"##",2)) commented = 1-commented;
 		if (strncmp(s1,"#",1) && strncmp(s1,"\n",1) && strncmp(s1,">",1) && commented==0) {
-			sscanf(s1,"%s\t%lg\n",s,&x);
+			sscanf(s1,"%s\t%s\n",s,s2);
+			if (!strncmp(s1,"envelope_file",13)) burst.envelope_file = s2;
+			else sscanf(s1,"%s\t%lg\n",s,&x);
 			if (!strncmp(s,"E18",3)) burst.E18=x;
 			if (!strncmp(s,"yb",2)) burst.yb=x;
 			if (!strncmp(s,"yt",2)) burst.yt=x;
@@ -100,7 +103,6 @@ void parse_parameters(char *fname,Burst &burst,double &distance) {
 			if (!strncmp(s,"deep_composition",16)) burst.deep_composition_flag=(int) x;
 			if (!strncmp(s,"shallow_composition",19)) burst.shallow_composition_flag=(int) x;
 			if (!strncmp(s,"L34",3)) burst.L34=x;
-			if (!strncmp(s,"envelope_file",13)) burst.envelope_file=x;
 			if (!strncmp(s,"env_g",5)) burst.env_g=x;
 		}
 	}

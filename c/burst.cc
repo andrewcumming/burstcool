@@ -8,6 +8,7 @@
 #include "../h/ns.h"
 #include "../h/timer.h"
 #include "../h/burst.h"
+using namespace std;
 
 void *pt2Burst;
 
@@ -40,7 +41,7 @@ Burst::Burst() {
 	this->output = 1;
 
 	// Envelope files
-	this->envelope_file = 'none';
+	this->envelope_file = "none";
 	this->env_g = 2.45e14;
 
 }
@@ -422,24 +423,25 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 
 
 	//  HOW TO MAKE THIS WORK?
-	// if (this->envelope_file == 'none') {
-	// 	char fname[50]="envelope_models/grid_sorty_";
-	// 	if (comp == 0) {
-	// 		sprintf(fname,"%sFe_%d",fname,(int) yHe);		
-	// 	} else {
-	// 		sprintf(fname,"%sSi_%d",fname,(int) yHe);
-	// 	}
-	// }	
-	// else {
-	// 	char fname = this->envelope_file;
+	char fname[50]="envelope_models/grid_sorty_";
+	if (this->envelope_file == "none") {
+		if (comp == 0) {
+			sprintf(fname,"%sFe_%d",fname,(int) yHe);		
+		} else {
+			sprintf(fname,"%sSi_%d",fname,(int) yHe);
+		}
+	}	
+	else {
+		sprintf(fname,"envelope_models/%s",this->envelope_file.c_str());
+	}
+
+	// char fname[50]="envelope_models/grid_sorty_";
+	// if (comp == 0) {
+	// 	sprintf(fname,"%sFe_%d",fname,(int) yHe);		
+	// } else {
+	// 	sprintf(fname,"%sSi_%d",fname,(int) yHe);
 	// }
 
-	char fname[50]="envelope_models/grid_sorty_";
-	if (comp == 0) {
-		sprintf(fname,"%sFe_%d",fname,(int) yHe);		
-	} else {
-		sprintf(fname,"%sSi_%d",fname,(int) yHe);
-	}
 	printf("Reading TbTeff relation from file: %s\n",fname);
 
 

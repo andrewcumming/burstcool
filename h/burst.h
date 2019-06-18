@@ -1,6 +1,8 @@
 #include "../h/odeint.h"
 #include "../h/spline.h"
 #include "../h/eos.h"
+#include <string>
+using namespace std;
 
 class Burst: public Ode_Int_Delegate {
 public:
@@ -30,7 +32,7 @@ public:
 	int shallow_composition_flag,deep_composition_flag;
 	double L34;
 
-	char envelope_file;
+	string envelope_file;
 	double env_g;
 	
 	
