@@ -415,15 +415,14 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 // reads in the Flux-T relation from the data file 'grid_sorty'
 // made by makegrid.cc
 {
-	double *temp, *flux;
+	double *temp1, *flux, *temp2;
 	double y,T,F;
-	// int npoints = 381;  // number of points to read in
-	// temp = vector(npoints);
-	// flux = vector(npoints);
+    double y0;
+	char line[1024];  // buffer to read line from envelope file
 
-
-	//  HOW TO MAKE THIS WORK?
 	char fname[50]="envelope_models/grid_sorty_";
+    // in the case where no envelope file is specified, construct the filename
+    // based on the helium column and composition parameters
 	if (this->envelope_file == "none") {
 		if (comp == 0) {
 			sprintf(fname,"%sFe_%d",fname,(int) yHe);		
@@ -431,60 +430,84 @@ void Burst::get_TbTeff_relation(double yHe, int comp)
 			sprintf(fname,"%sSi_%d",fname,(int) yHe);
 		}
 	}	
+	// or use the filename given in the init.dat file
 	else {
 		sprintf(fname,"envelope_models/%s",this->envelope_file.c_str());
 	}
 
-	// char fname[50]="envelope_models/grid_sorty_";
-	// if (comp == 0) {
-	// 	sprintf(fname,"%sFe_%d",fname,(int) yHe);		
-	// } else {
-	// 	sprintf(fname,"%sSi_%d",fname,(int) yHe);
-	// }
-
 	printf("Reading TbTeff relation from file: %s\n",fname);
 
+    // adjust the column depth so that we extract the flux-temperature
+    // relation at the same surface pressure as in our model
+    y0 = log10(this->yt * this->g / this->env_g);
 
-	FILE *fp = fopen(fname,"r");
+    // open a file to use to output the F-T relation
 	FILE *fp2;
 	if (this->output) fp2=fopen("out/TbTeff", "w");
-
-	// First run to find the number of points
+    
+    // find the column depths in the envelope model that bracket y0
+	FILE *fp = fopen(fname,"r");
+    double y1 = 0.0, y2 = 0.0;
+    while (fgets(line, sizeof line, fp)) {
+        sscanf(line, "%lg %lg %lg", &y, &T, &F);
+        if (y <= y0) y1 = y;
+        if (y > y0 && y2 == 0.0) y2 = y;
+    }
+    fclose(fp);
+    
+	// Find the number of points in the file by counting how many times
+	// the column y1 appears in the file (should be the same for y2!)
+	fp = fopen(fname,"r");
 	int npoints=0;
-	while (!feof(fp)) {
-		fscanf(fp, "%lg %lg %lg\n", &y, &T, &F);
-		if (y == log10(this->yt)) ++npoints; // increment 1
+    while (fgets(line, sizeof line, fp)) {
+        sscanf(line, "%lg %lg %lg", &y, &T, &F);
+		if (y == y1) ++npoints; // increment 1
 	}
 	fclose(fp);
-	temp = vector(npoints);
+
+    // arrays to store T and F
+	temp1 = vector(npoints);
+	temp2 = vector(npoints);
 	flux = vector(npoints);
 
-
-	// Now reading the data
+	// Now read the data
 	fp = fopen(fname,"r");
-	int count = 0;
-	while (!feof(fp)) {
-		
-		fscanf(fp, "%lg %lg %lg\n", &y, &T, &F);
-		if (y == log10(this->yt)) {  // select out the points which correspond to the top column
-			count++; 
-			temp[count] = pow(10.0,T);
-			flux[count] = pow(10.0,F);
-			// printf("%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
-			if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
+	int count1 = 0, count2 = 0;
+    while (fgets(line, sizeof line, fp)) {
+        sscanf(line, "%lg %lg %lg", &y, &T, &F);
+
+		if (y == y1) {  // select out the points which correspond to column y1
+			count1++; 
+			temp1[count1] = pow(10.0,T);
+			flux[count1] = pow(10.0,F);
 		}
+		if (y == y2) {  // select out the points which correspond to column y2
+			count2++; 
+			temp2[count2] = pow(10.0,T);
+			// just store the temperature here because the fluxes should be the same!
+		}		
 	}
-	printf("Read %d points from %s\n",count,fname);
-		
 	fclose(fp);
+
+	if (count1 != count2) printf("Something went wrong in the grid_sorty file!\n");
+	printf("Read %d points from %s\n",count1,fname);
+	
+    // now interpolate between the bracketing columns to get the flux-T relation
+    double interpfac = (y0 - y1) / (y2 - y1);
+	for (int i=0; i<npoints; i++) {
+	    temp1[i] += interpfac * (temp2[i]-temp1[i]);
+	    if (this->output) fprintf(fp2, "%d %lg %lg\n", i, temp1[i],flux[i]);
+	}
+		
 	if (this->output) fclose(fp2);
 	
-	this->TEFF.minit(temp,flux,count);
-	
-	free_vector(temp);
+	// initialize spline with the T-F relation to use during the evolution
+	this->TEFF.minit(temp1,flux,count1);
+
+	free_vector(temp1);
+	free_vector(temp2);
 	free_vector(flux);
 }
-
 
 
 // --------------------------------------------------------------------------
